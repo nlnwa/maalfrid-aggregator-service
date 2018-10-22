@@ -1,0 +1,4 @@
+language: node_js
+node_js:
+  - "lts/*" # latest LTS Node.js release
+  - "node"  # latest stable Node.js release

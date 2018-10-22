@@ -1,0 +1,16 @@
+{
+  "filter": {
+    "contentType": [
+      "application/pdf",
+      "text/html"
+    ],
+    "language": [
+      "NNO",
+      "NOB"
+    ],
+    "requestedUri": [
+      "https://test.no",
+      "https://www.nb.no"
+    ]
+  }
+}

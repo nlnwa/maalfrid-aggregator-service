@@ -1,0 +1,119 @@
+[
+  {
+    "characterCount": 859,
+    "contentType": "text/html; charset=utf-8",
+    "language": "NOB",
+    "lix": 50,
+    "longWordCount": 53,
+    "requestedUri": "https://test.no/",
+    "sentenceCount": 11,
+    "wordCount": 137
+  },
+  {
+    "characterCount": 11655,
+    "contentType": "text/html; charset=utf-8",
+    "discoveryPath": "LLL",
+    "language": "NOB",
+    "lix": 49,
+    "longWordCount": 668,
+    "recordType": "revisit",
+    "requestedUri": "https://test.no/kundesider/regnskap/selvstendig-n%C3%A6ringsdrivende-uten-fast-forretningssted",
+    "sentenceCount": 120,
+    "wordCount": 2077
+  },
+  {
+    "characterCount": 10534,
+    "contentType": "text/html; charset=utf-8",
+    "discoveryPath": "LL",
+    "language": "NOB",
+    "lix": 34,
+    "longWordCount": 542,
+    "recordType": "revisit",
+    "requestedUri": "https://test.no/kundesider/tid-og-frav%C3%A6r",
+    "wordCount": 2270
+  },
+  {
+    "characterCount": 1539,
+    "contentType": "text/html; charset=utf-8",
+    "discoveryPath": "LLL",
+    "language": "NOB",
+    "lix": 44,
+    "longWordCount": 90,
+    "recordType": "revisit",
+    "requestedUri": "https://test.no/fagomrader/utredning/nettverk-for-samfunns%C3%B8konomisk-analyse",
+    "sentenceCount": 22,
+    "wordCount": 290
+  },
+  {
+    "characterCount": 12217,
+    "contentType": "text/html; charset=utf-8",
+    "discoveryPath": "LLL",
+    "language": "NOB",
+    "lix": 45,
+    "longWordCount": 804,
+    "recordType": "revisit",
+    "requestedUri": "https://test.no/fagomrader/%C3%B8konomiregelverket/endringer-i-%C3%B8konomiregelverket-fra-1-1-2014",
+    "sentenceCount": 233,
+    "wordCount": 2173
+  },
+  {
+    "characterCount": 1519,
+    "contentType": "text/html; charset=utf-8",
+    "discoveryPath": "LLL",
+    "language": "NOB",
+    "lix": 48,
+    "longWordCount": 105,
+    "recordType": "revisit",
+    "requestedUri": "https://test.no/fagomrader/utredning/forenklet-analyse",
+    "sentenceCount": 24,
+    "wordCount": 277
+  },
+  {
+    "characterCount": 2484,
+    "contentType": "text/html; charset=utf-8",
+    "discoveryPath": "LLL",
+    "language": "NOB",
+    "lix": 58,
+    "longWordCount": 150,
+    "recordType": "response",
+    "requestedUri": "https://test.no/fagomrader/statlige-regnskapsstandarder/oversikt-over-regnskapsprinsipper-i-statlige-virksomheter",
+    "sentenceCount": 22,
+    "wordCount": 353
+  },
+  {
+    "characterCount": 1269,
+    "contentType": "text/html; charset=utf-8",
+    "discoveryPath": "LL",
+    "language": "NOB",
+    "lix": 47,
+    "longWordCount": 83,
+    "recordType": "revisit",
+    "requestedUri": "https://test.no/fagomrader/utredning",
+    "sentenceCount": 21,
+    "wordCount": 224
+  },
+  {
+    "characterCount": 1723,
+    "contentType": "application/pdf",
+    "discoveryPath": "LLL",
+    "language": "NOB",
+    "lix": 44,
+    "longWordCount": 110,
+    "recordType": "revisit",
+    "requestedUri": "https://test.no/fagomrader/utredning/kvalitetssikre-en-utredning",
+    "sentenceCount": 29,
+    "wordCount": 326
+  },
+  {
+    "characterCount": 598,
+    "contentType": "text/html; charset=utf-8",
+    "discoveryPath": "LL",
+    "language": "NOB",
+    "lix": 46,
+    "longWordCount": 40,
+    "recordType": "response",
+    "requestedUri": "https://test.no/kundesider/kundenotater/25-2018-endringer-i-systemlosningen-til-hovedlonn-mai",
+    "sentenceCount": 11,
+    "wordCount": 110
+  }
+]

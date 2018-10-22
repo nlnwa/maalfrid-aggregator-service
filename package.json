@@ -1,0 +1,26 @@
+{
+  "name": "maalfrid-aggregator-service",
+  "version": "0.1.0-alpha.1",
+  "license": "Apache-2.0",
+  "description": "Maalfrid aggregator service API",
+  "main": "index.js",
+  "repository": "https://github.com/nlnwa/maalfrid-aggregator-service",
+  "private": true,
+  "scripts": {
+    "start": "node .",
+    "lint": "standard",
+    "test": "mocha",
+    "build:docker": "docker build -t norsknettarkiv/maalfrid-aggregator-service:$(git rev-parse --abbrev-ref HEAD) ."
+  },
+  "dependencies": {
+    "@grpc/proto-loader": "^0.3.0",
+    "grpc": "^1.13.1",
+    "rethinkdb-js": "rethinkdb/rethinkdb-js",
+    "maalfrid-api": "nlnwa/maalfrid-api"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "mocha": "^5.2.0",
+    "standard": "^11.0.1"
+  }
+}
