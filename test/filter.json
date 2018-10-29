@@ -1,16 +1,25 @@
 {
-  "filter": {
-    "contentType": [
-      "application/pdf",
-      "text/html"
-    ],
-    "language": [
-      "NNO",
-      "NOB"
-    ],
-    "requestedUri": [
-      "https://test.no",
-      "https://www.nb.no"
-    ]
-  }
+  "filter": [
+    {
+      "name": "contentType",
+      "value": [
+        "application/pdf",
+        "text/html"
+      ]
+    },
+    {
+      "name": "language",
+      "value": [
+        "NNO",
+        "NOB"
+      ]
+    },
+    {
+      "name": "requestedUri",
+      "value": [
+        "https://test.no",
+        "https://www.nb.no"
+      ]
+    }
+  ]
 }

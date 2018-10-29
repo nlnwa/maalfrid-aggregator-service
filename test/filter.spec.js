@@ -28,10 +28,6 @@ const selection = require('./filter.data').map((doc) =>
 )
 const filters = Object.freeze(data.filter)
 
-describe('spec', () => {
-
-})
-
 describe('lib/filter.js', () => {
   before('monkeypatch built-ins to emulate reql object functions', () => {
     // eslint-disable-next-line no-extend-native
@@ -170,15 +166,14 @@ describe('lib/filter.js', () => {
 
   describe('makeFilterPredicate', () => {
     it('should return a function when given arguments', () => {
-      const name = 'requestedUri'
-      const filter = filters[name]
-      const fn = makeFilterPredicate(name, filter)
+      const filter = filters.find(_ => _.name === 'requestedUri')
+      const fn = makeFilterPredicate(filter)
       assert.isFunction(fn)
     })
 
     it('returned function should return boolean when given an array argument', () => {
-      const name = 'requestedUri'
-      const predicateFn = makeFilterPredicate(name, filters[name])
+      const filter = filters.find(_ => _.name === 'requestedUri')
+      const predicateFn = makeFilterPredicate(filter)
       const predicate = predicateFn(selection[0])
       assert.isBoolean(predicate)
     })
@@ -187,7 +182,7 @@ describe('lib/filter.js', () => {
   describe('filterToReql', () => {
     it('should return an array given an array selection and a set of filters', () => {
       assert.isArray(selection)
-      assert.isObject(filters)
+      assert.isArray(filters)
       const result = filterToReql(selection, filters)
       assert.isArray(result)
     })
@@ -196,7 +191,7 @@ describe('lib/filter.js', () => {
       const no = {language: 'BOR'}
       const yes = {language: 'NNO'}
       const selection = [no, yes]
-      const filters = {language: ['NNO']}
+      const filters = [{name: 'language', value: ['NNO']}]
 
       const result = filterToReql(selection, filters)
       assert.deepEqual(result, [yes])
@@ -206,7 +201,7 @@ describe('lib/filter.js', () => {
       const no = {language: 'BOR', requestedUri: 'https://www.nb.no'}
       const yes = {language: 'NNO', requestedUri: 'https://nettarkivet.nb.no'}
       const selection = [no, yes]
-      const filters = {requestedUri: ['https://nettarkivet']}
+      const filters = [{name: 'requestedUri', value: ['https://nettarkivet']}]
 
       const result = filterToReql(selection, filters)
       assert.deepEqual(result, [yes])
