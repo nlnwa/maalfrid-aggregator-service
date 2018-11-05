@@ -1,6 +1,12 @@
 {
   "filter": [
     {
+      "name": "matchRegexp",
+      "field": "requestedUri",
+      "value": "https://test.no/kundesider",
+      "exlusive": true
+    },
+    {
       "name": "contentType",
       "value": [
         "application/pdf",

@@ -13,20 +13,12 @@ const {
   inClosedInterval,
   prefixOf,
   filterFn,
-  makeFilterPredicate,
-  filterToReql
-} = require('../lib/filter')(reqlMock)
+  makePredicate,
+  filterToPredicate
+} = require('../lib/filter')(reqlMock, console)
 
-const data = require('./filter')
-const selection = require('./filter.data').map((doc) =>
-  Object.keys(doc).reduce((acc, key) => {
-    if (Number.isInteger(doc[key])) {
-      doc[key] = Number(doc[key])
-    }
-    return doc
-  }, doc)
-)
-const filters = Object.freeze(data.filter)
+const filters = require('./filter').filter
+const selection = require('./filter.data')
 
 describe('lib/filter.js', () => {
   before('monkeypatch built-ins to emulate reql object functions', () => {
@@ -35,15 +27,24 @@ describe('lib/filter.js', () => {
     // eslint-disable-next-line no-extend-native
     String.prototype.eq = function (str) { return this.toString() === str }
     // eslint-disable-next-line no-extend-native
-    Object.prototype.getField = function getField (field) { return this[field] }
+    Object.prototype.getField = function getField (field) {
+      if (!this.hasOwnProperty(field)) {
+        throw new Error('No attribute ' + field + ' in object: ' + this)
+      }
+      return this[field]
+    }
     // eslint-disable-next-line no-extend-native
-    Number.prototype.gt = function (number) { return this > number }
+    Number.prototype.gt = function (number) { return this.valueOf() > number }
     // eslint-disable-next-line no-extend-native
-    Number.prototype.gte = function (number) { return this >= number }
+    Number.prototype.gte = function (number) { return this.valueOf() >= number }
     // eslint-disable-next-line no-extend-native
-    Number.prototype.lt = function (number) { return this < number }
+    Number.prototype.lt = function (number) { return this.valueOf() < number }
     // eslint-disable-next-line no-extend-native
-    Number.prototype.lte = function (number) { return this <= number }
+    Number.prototype.lte = function (number) { return this.valueOf() <= number }
+    // eslint-disable-next-line no-extend-native
+    Boolean.prototype.and = function (val) { return this.valueOf() && val }
+    // eslint-disable-next-line no-extend-native
+    Boolean.prototype.not = function () { return !this.valueOf() }
   })
 
   describe('spec', () => {
@@ -69,6 +70,12 @@ describe('lib/filter.js', () => {
       const obj = {expected}
       const actual = obj.getField('expected')
       assert.equal(expected, actual)
+    })
+
+    it('Boolean.prototype.and', () => {
+      assert.isFalse(false.and(true))
+      assert.isFalse(true.and(false))
+      assert.isTrue(true.and(true))
     })
   })
 
@@ -157,43 +164,42 @@ describe('lib/filter.js', () => {
     })
 
     it('should return a predicateFn resolving true given a non-existent filter name', () => {
-      const fn = filterFn('barbie')
+      const doc = {}
+      const fn = filterFn('barbie')(doc)
       assert.isTrue(fn('whatever'))
       assert.isTrue(fn('yo mo'))
       assert.isTrue(fn(32))
     })
   })
 
-  describe('makeFilterPredicate', () => {
+  describe('makePredicate', () => {
     it('should return a function when given arguments', () => {
       const filter = filters.find(_ => _.name === 'requestedUri')
-      const fn = makeFilterPredicate(filter)
+      const fn = makePredicate(filter)
       assert.isFunction(fn)
     })
 
     it('returned function should return boolean when given an array argument', () => {
       const filter = filters.find(_ => _.name === 'requestedUri')
-      const predicateFn = makeFilterPredicate(filter)
+      const predicateFn = makePredicate(filter)
       const predicate = predicateFn(selection[0])
       assert.isBoolean(predicate)
     })
   })
 
-  describe('filterToReql', () => {
-    it('should return an array given an array selection and a set of filters', () => {
-      assert.isArray(selection)
+  describe('filterToPredicate', () => {
+    it('should return a function given an array of filters', () => {
       assert.isArray(filters)
-      const result = filterToReql(selection, filters)
-      assert.isArray(result)
+      const result = filterToPredicate(filters)
+      assert.isFunction(result)
     })
 
     it('should filter a selection of according to the rules (of language)', () => {
       const no = {language: 'BOR'}
       const yes = {language: 'NNO'}
       const selection = [no, yes]
-      const filters = [{name: 'language', value: ['NNO']}]
 
-      const result = filterToReql(selection, filters)
+      const result = selection.filter(filterToPredicate([{name: 'language', value: ['NNO']}]))
       assert.deepEqual(result, [yes])
     })
 
@@ -201,10 +207,21 @@ describe('lib/filter.js', () => {
       const no = {language: 'BOR', requestedUri: 'https://www.nb.no'}
       const yes = {language: 'NNO', requestedUri: 'https://nettarkivet.nb.no'}
       const selection = [no, yes]
-      const filters = [{name: 'requestedUri', value: ['https://nettarkivet']}]
+      const filters = [
+        {name: 'requestedUri', value: ['https://nettarkivet']},
+        {name: 'language', value: ['NNO']}
+      ]
 
-      const result = filterToReql(selection, filters)
+      const result = selection.filter(filterToPredicate(filters))
       assert.deepEqual(result, [yes])
+    })
+
+    it('should support exlusive filters', () => {
+      const predicates = filterToPredicate(filters)
+      const result = selection.filter(predicates)
+      assert.isTrue(result.length === 7)
+      const exlusiveFilter = filters.find(_ => _.exlusive === true)
+      assert.isTrue(result.find(_ => _.requestedUri.match(exlusiveFilter.value)) === undefined)
     })
   })
 })
