@@ -10,7 +10,7 @@
     "start": "node .",
     "lint": "standard",
     "test": "mocha",
-    "build:docker": "docker build -t norsknettarkiv/maalfrid-aggregator-service:$(git rev-parse --abbrev-ref HEAD) ."
+    "build:docker": "docker build -t norsknettarkiv/maalfrid-aggregator-service:$(git describe) ."
   },
   "dependencies": {
     "@grpc/proto-loader": "^0.3.0",
