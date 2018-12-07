@@ -1,5 +1,5 @@
-const {describe, it, before} = require('mocha')
-const {assert} = require('chai')
+const { describe, it, before } = require('mocha')
+const { assert } = require('chai')
 
 const reqlMock = {
   expr: (_) => _,
@@ -57,7 +57,7 @@ describe('lib/filter.js', () => {
 
     it('r.expr is the identity function', () => {
       assert.equal(reqlMock.expr(true), true)
-      assert.deepEqual(reqlMock.expr({1: 2}), {1: 2})
+      assert.deepEqual(reqlMock.expr({ 1: 2 }), { 1: 2 })
     })
 
     it('r.and is the and of two booleans', () => {
@@ -67,7 +67,7 @@ describe('lib/filter.js', () => {
 
     it('getField should be an object method returning named property of object', () => {
       const expected = 2
-      const obj = {expected}
+      const obj = { expected }
       const actual = obj.getField('expected')
       assert.equal(expected, actual)
     })
@@ -195,21 +195,21 @@ describe('lib/filter.js', () => {
     })
 
     it('should filter a selection of according to the rules (of language)', () => {
-      const no = {language: 'BOR'}
-      const yes = {language: 'NNO'}
+      const no = { language: 'BOR' }
+      const yes = { language: 'NNO' }
       const selection = [no, yes]
 
-      const result = selection.filter(filterToPredicate([{name: 'language', value: ['NNO']}]))
+      const result = selection.filter(filterToPredicate([{ name: 'language', value: ['NNO'] }]))
       assert.deepEqual(result, [yes])
     })
 
     it('should filter a selection of according to the rules (of requestedUri)', () => {
-      const no = {language: 'BOR', requestedUri: 'https://www.nb.no'}
-      const yes = {language: 'NNO', requestedUri: 'https://nettarkivet.nb.no'}
+      const no = { language: 'BOR', requestedUri: 'https://www.nb.no' }
+      const yes = { language: 'NNO', requestedUri: 'https://nettarkivet.nb.no' }
       const selection = [no, yes]
       const filters = [
-        {name: 'requestedUri', value: ['https://nettarkivet']},
-        {name: 'language', value: ['NNO']}
+        { name: 'requestedUri', value: ['https://nettarkivet'] },
+        { name: 'language', value: ['NNO'] }
       ]
 
       const result = selection.filter(filterToPredicate(filters))
