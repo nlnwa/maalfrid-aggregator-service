@@ -1221,9 +1221,9 @@ luxon@^1.2.1:
   resolved "https://registry.yarnpkg.com/luxon/-/luxon-1.4.5.tgz#88f6d4901f61bcff26cfbb66b54f464c9f759b82"
   integrity sha512-l2zRBzQt47/OLD//V5odz5JFIvReS+7dmt0KtP6R+jMymki1XuU+hA8loyUvwLj6714HD79cokPtOF2TO8nl5w==
 
-maalfrid-api@nlnwa/maalfrid-api:
+maalfrid-api@nlnwa/maalfrid-api#master:
   version "0.0.0"
-  resolved "https://codeload.github.com/nlnwa/maalfrid-api/tar.gz/bd2975b5404d5c47aaa7e63a93556e05840fa5b6"
+  resolved "https://codeload.github.com/nlnwa/maalfrid-api/tar.gz/501cbb2783e10ff4bab34d942bafe1ac8560bf5f"
 
 mimic-fn@^1.0.0:
   version "1.2.0"
