@@ -10,12 +10,12 @@
     "start": "node .",
     "lint": "standard",
     "test": "mocha",
-    "build:docker": "docker build -t norsknettarkiv/maalfrid-aggregator-service:$(git describe) ."
+    "build:docker": "docker build -t norsknettarkiv/maalfrid-aggregator-service:$(git describe --tags --always) ."
   },
   "dependencies": {
     "@grpc/proto-loader": "^0.3.0",
     "bluebird": "^3.5.3",
-    "grpc": "^1.17.0-pre1",
+    "grpc": "^1.17.0",
     "maalfrid-api": "nlnwa/maalfrid-api#master",
     "rethinkdb-js": "rethinkdb/rethinkdb-js"
   },
