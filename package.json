@@ -14,8 +14,7 @@
   },
   "dependencies": {
     "@grpc/proto-loader": "^0.3.0",
-    "bluebird": "^3.5.3",
-    "grpc": "^1.17.0",
+    "grpc": "^1.18.0",
     "maalfrid-api": "nlnwa/maalfrid-api#master",
     "rethinkdb-js": "rethinkdb/rethinkdb-js#master"
   },

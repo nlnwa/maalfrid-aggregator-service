@@ -11,6 +11,7 @@ const {
   someInArrayEquals,
   someInArrayIsPrefixOf,
   inClosedInterval,
+  matchRegexp,
   prefixOf,
   filterFn,
   makePredicate,
@@ -153,6 +154,27 @@ describe('lib/filter.js', () => {
 
     it('returned function should return true when number is in given range', () => {
       const result = inClosedInterval([1, 4])(3)
+      assert.isTrue(result)
+    })
+  })
+
+  describe('matchRegexp', () => {
+    it('should return a function when given an argument', () => {
+      const result = matchRegexp(/ab+cd/)
+      assert.isFunction(result)
+    })
+
+    it('returned function should return boolean when argument is a string', () => {
+      const result = matchRegexp(/ab+cd/)('abcd')
+      assert.isBoolean(result)
+    })
+
+    it('returned function should throw when argument is not a string', () => {
+      assert.throws(matchRegexp(/ab+cd/).bind(matchRegexp, true), TypeError)
+    })
+
+    it('returned function should return true when a matching regexp is given', () => {
+      const result = matchRegexp(/abc/)('abcdefgh')
       assert.isTrue(result)
     })
   })
