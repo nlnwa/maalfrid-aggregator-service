@@ -1,0 +1,16 @@
+#!/usr/bin/env sh
+
+# see https://docs.docker.com/docker-hub/builds/advanced/#environment-variables-for-building-and-testing
+
+VERSION="${SOURCE_BRANCH}"
+
+if [ "${VERSION}" = "master" ]; then
+  VERSION="${SOURCE_COMMIT}"
+fi
+
+docker build \
+--build-arg VCS_REF="${SOURCE_COMMIT}" \
+--build-arg SOURCE_REPOSITORY_URL="${SOURCE_REPOSITORY_URL}" \
+--build-arg BUILD_DATE="$(date -u +'%Y-%m-%dT%H:%M:%SZ')" \
+--build-arg VERSION="${VERSION}" \
+--tag ${IMAGE_NAME} .

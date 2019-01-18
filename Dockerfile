@@ -1,13 +1,28 @@
 FROM node:10-alpine
 
-LABEL maintainer="nettarkivet@nb.no"
+ARG VCS_REF
+ARG BUILD_DATE
+ARG VERSION
+ARG SOURCE_REPOSITORY_URL
+
+LABEL maintainer="nettarkivet@nb.no" \
+      org.label-schema.schema-version="1.0" \
+      org.label-schema.vendor="National Library of Norway" \
+      org.label-schema.url="https://www.nb.no/" \
+      org.label-schema.version="${VERSION}" \
+      org.label-schema.build-date="${BUILD_DATE}" \
+      org.label-schema.vcs-ref="${VCS_REF}" \
+      org.label-schema.vcs-url="${SOURCE_REPOSITORY_URL}"
 
 COPY package.json yarn.lock /usr/src/app/
+
 WORKDIR /usr/src/app
 
 RUN yarn install --production && yarn cache clean
 
 COPY . .
+
+RUN sed -i "s|version: ''|version: '${VERSION}'|" ./lib/config.js
 
 ENV HOST=0.0.0.0 \
     PORT=3011 \
