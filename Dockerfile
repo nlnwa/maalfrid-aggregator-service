@@ -4,7 +4,7 @@ ARG VCS_REF
 ARG BUILD_DATE
 ARG VERSION
 
-LABEL maintainer="nettarkivet@nb.no" \
+LABEL maintainer="mariusb.beck@nb.no" \
       org.label-schema.schema-version="1.0" \
       org.label-schema.vendor="National Library of Norway" \
       org.label-schema.url="https://www.nb.no/" \
