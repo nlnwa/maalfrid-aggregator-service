@@ -32,7 +32,7 @@ describe('lib/concurrent.js', () => {
       assert.isTrue(isAsyncIterator(makeAsyncIterator(getCursorMock())))
     })
 
-    it('iterates until exhaustion', async () => {
+    it('the returned async iterator iterates until exhaustion', async () => {
       const cursorSize = 20
       const asyncIterator = makeAsyncIterator(getCursorMock({ cursorSize }))
       let count = 0
@@ -62,8 +62,7 @@ describe('lib/concurrent.js', () => {
     it('should yield an array containing specified number of elements or the final residual count', async () => {
       const cursorSize = 25
       const concurrency = 10
-      const cursor = getCursorMock({ cursorSize })
-      for await (const rows of rowCollector(cursor, concurrency)) {
+      for await (const rows of rowCollector(getCursorMock({ cursorSize }), concurrency)) {
         assert.oneOf(rows.length, [concurrency, cursorSize % concurrency])
       }
     })
@@ -72,13 +71,13 @@ describe('lib/concurrent.js', () => {
   describe('map', () => {
     it('should apply and await async mapper function concurrently to values of cursor until exhaustion', async () => {
       const cursorSize = 100
+      const concurrency = Math.ceil(Math.random() * 100)
       let count = 0
-      const cursor = getCursorMock({ cursorSize })
       const mapper = async (row) => {
         count++
         return Promise.resolve(row.count)
       }
-      await map(cursor, mapper, Math.ceil(Math.random() * 100))
+      await map(getCursorMock({ cursorSize }), mapper, concurrency)
       assert.equal(count, cursorSize)
     })
   })
