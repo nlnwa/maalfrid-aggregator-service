@@ -251,13 +251,15 @@ describe('lib/filter.js', () => {
 
   describe('intervalize', () => {
     it('places filterSets into intervals', () => {
-      const [a, b, c, d, e, f, g, h] = intervalize(intervals)
+      const [a, b, c, d, e, f, g, h, i] = intervalize(intervals)
+
       const expected = {
         a: [a, b, c, d, e, f, g, h],
         b: [c, d],
         c: [e, f],
         d: [b, c, d, e, f, g],
-        e: [d]
+        e: [d],
+        f: [i]
       }
       Object.entries(expected).forEach(([id, haystack]) =>
         assert.isTrue(haystack.every(needle => needle.ids.includes(id)))

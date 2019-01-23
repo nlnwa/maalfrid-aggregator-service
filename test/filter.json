@@ -34,27 +34,28 @@
     },
     {
       "id": "b",
-      "filters": [],
       "validFrom": "2019-01-01T00:00Z",
       "validTo": "2019-01-20T00:00Z"
     },
     {
       "id": "c",
-      "filters": [],
       "validFrom": "2019-01-20T00:00Z",
       "validTo": "2019-01-25T00:00Z"
     },
     {
       "id": "d",
-      "filters": [],
       "validFrom": "2018-01-01T00:00Z",
       "validTo": "2019-02-01T00:00Z"
     },
     {
       "id": "e",
-      "filters": [],
       "validFrom": "2019-01-05T00:00Z",
       "validTo": "2019-01-22T00:00Z"
+    },
+    {
+      "id": "f",
+      "validFrom": "2020-01-01T00:00Z",
+      "validTo": "2020-01-10T00:00Z"
     }
   ]
 }
