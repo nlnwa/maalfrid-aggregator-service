@@ -15,10 +15,12 @@ const {
   prefixOf,
   filterFn,
   makePredicate,
-  filterToPredicate
+  filterToPredicate,
+  intervalize
 } = require('../lib/filter')(reqlMock, console)
 
-const filters = require('./filter').filter
+const filterSet = require('./filter').filterSets[0]
+const intervals = require('./filter').filterSets
 const selection = require('./filter.data')
 
 describe('lib/filter.js', () => {
@@ -196,13 +198,13 @@ describe('lib/filter.js', () => {
 
   describe('makePredicate', () => {
     it('should return a function when given arguments', () => {
-      const filter = filters.find(_ => _.name === 'requestedUri')
+      const filter = filterSet.filters.find(_ => _.name === 'requestedUri')
       const fn = makePredicate(filter)
       assert.isFunction(fn)
     })
 
     it('returned function should return boolean when given an array argument', () => {
-      const filter = filters.find(_ => _.name === 'requestedUri')
+      const filter = filterSet.filters.find(_ => _.name === 'requestedUri')
       const predicateFn = makePredicate(filter)
       const predicate = predicateFn(selection[0])
       assert.isBoolean(predicate)
@@ -211,8 +213,8 @@ describe('lib/filter.js', () => {
 
   describe('filterToPredicate', () => {
     it('should return a function given an array of filters', () => {
-      assert.isArray(filters)
-      const result = filterToPredicate(filters)
+      assert.isArray(filterSet.filters)
+      const result = filterToPredicate(filterSet.filters)
       assert.isFunction(result)
     })
 
@@ -239,11 +241,27 @@ describe('lib/filter.js', () => {
     })
 
     it('should support exlusive filters', () => {
-      const predicates = filterToPredicate(filters)
+      const predicates = filterToPredicate(filterSet.filters)
       const result = selection.filter(predicates)
       assert.isTrue(result.length === 7)
-      const exlusiveFilter = filters.find(_ => _.exlusive === true)
+      const exlusiveFilter = filterSet.filters.find(_ => _.exlusive === true)
       assert.isTrue(result.find(_ => _.requestedUri.match(exlusiveFilter.value)) === undefined)
+    })
+  })
+
+  describe('intervalize', () => {
+    it('places filterSets into intervals', () => {
+      const [a, b, c, d, e, f, g, h] = intervalize(intervals)
+      const expected = {
+        a: [a, b, c, d, e, f, g, h],
+        b: [c, d],
+        c: [e, f],
+        d: [b, c, d, e, f, g],
+        e: [d]
+      }
+      Object.entries(expected).forEach(([id, haystack]) =>
+        assert.isTrue(haystack.every(needle => needle.ids.includes(id)))
+      )
     })
   })
 })

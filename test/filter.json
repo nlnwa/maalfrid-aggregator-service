@@ -1,31 +1,60 @@
 {
-  "filter": [
+  "filterSets": [
     {
-      "name": "matchRegexp",
-      "field": "requestedUri",
-      "value": "https://test.no/kundesider",
-      "exlusive": true
-    },
-    {
-      "name": "contentType",
-      "value": [
-        "application/pdf",
-        "text/html"
+      "id": "a",
+      "filters": [
+        {
+          "name": "matchRegexp",
+          "field": "requestedUri",
+          "value": "https://test.no/kundesider",
+          "exlusive": true
+        },
+        {
+          "name": "contentType",
+          "value": [
+            "application/pdf",
+            "text/html"
+          ]
+        },
+        {
+          "name": "language",
+          "value": [
+            "NNO",
+            "NOB"
+          ]
+        },
+        {
+          "name": "requestedUri",
+          "value": [
+            "https://test.no",
+            "https://www.nb.no"
+          ]
+        }
       ]
     },
     {
-      "name": "language",
-      "value": [
-        "NNO",
-        "NOB"
-      ]
+      "id": "b",
+      "filters": [],
+      "validFrom": "2019-01-01T00:00Z",
+      "validTo": "2019-01-20T00:00Z"
     },
     {
-      "name": "requestedUri",
-      "value": [
-        "https://test.no",
-        "https://www.nb.no"
-      ]
+      "id": "c",
+      "filters": [],
+      "validFrom": "2019-01-20T00:00Z",
+      "validTo": "2019-01-25T00:00Z"
+    },
+    {
+      "id": "d",
+      "filters": [],
+      "validFrom": "2018-01-01T00:00Z",
+      "validTo": "2019-02-01T00:00Z"
+    },
+    {
+      "id": "e",
+      "filters": [],
+      "validFrom": "2019-01-05T00:00Z",
+      "validTo": "2019-01-22T00:00Z"
     }
   ]
 }
