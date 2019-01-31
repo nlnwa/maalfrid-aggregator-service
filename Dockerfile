@@ -1,17 +1,6 @@
 FROM node:10-alpine
 
-ARG VCS_REF
-ARG BUILD_DATE
-ARG VERSION
-
-LABEL maintainer="mariusb.beck@nb.no" \
-      org.label-schema.schema-version="1.0" \
-      org.label-schema.vendor="National Library of Norway" \
-      org.label-schema.url="https://www.nb.no/" \
-      org.label-schema.version="${VERSION}" \
-      org.label-schema.build-date="${BUILD_DATE}" \
-      org.label-schema.vcs-ref="${VCS_REF}" \
-      org.label-schema.vcs-url="https://github.com/nlnwa/maalfrid-aggregator-service"
+LABEL maintainer="mariusb.beck@nb.no"
 
 COPY package.json yarn.lock /usr/src/app/
 
@@ -20,8 +9,6 @@ WORKDIR /usr/src/app
 RUN yarn install --production && yarn cache clean
 
 COPY . .
-
-RUN sed -i "s|version: ''|version: '${VERSION}'|" ./lib/config.js
 
 ENV HOST=0.0.0.0 \
     PORT=3011 \
@@ -36,6 +23,8 @@ ENV HOST=0.0.0.0 \
     NODE_ENV=production \
     LOG_LEVEL=info
 
-EXPOSE 3010
+EXPOSE 3011
+
+USER node
 
 ENTRYPOINT ["/usr/local/bin/node", "index.js"]

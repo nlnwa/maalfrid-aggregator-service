@@ -7,7 +7,7 @@
           "name": "matchRegexp",
           "field": "requestedUri",
           "value": "https://test.no/kundesider",
-          "exlusive": true
+          "exclusive": true
         },
         {
           "name": "contentType",
@@ -29,6 +29,13 @@
             "https://test.no",
             "https://www.nb.no"
           ]
+        },
+        {
+          "name": "recordType",
+          "value": [
+            "revisit"
+          ],
+          "exclusive": true
         }
       ]
     },

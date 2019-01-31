@@ -2,9 +2,10 @@ const { describe, it, before } = require('mocha')
 const { assert } = require('chai')
 
 const reqlMock = {
-  expr: (_) => _,
+  expr: (value) => value,
   add: (a, b) => new RegExp(a.concat(b)),
-  and: (a, b) => a && b
+  and: (a, b) => a && b,
+  not: (bool) => !bool
 }
 
 const {
@@ -14,71 +15,136 @@ const {
   matchRegexp,
   prefixOf,
   filterFn,
-  makePredicate,
   filterToPredicate,
+  filtersToPredicates,
+  filtersToPredicate,
   intervalize
-} = require('../lib/filter')(reqlMock, console)
+} = require('../lib/filter')(reqlMock, { warn: () => {} })
 
+/**
+ *
+ * @type {FilterSet}}
+ */
 const filterSet = require('./filter').filterSets[0]
-const intervals = require('./filter').filterSets
-const selection = require('./filter.data')
+const intervals = require('./filter').filterSets.map(fs => {
+  if (fs.hasOwnProperty('validTo')) {
+    fs.validTo = new Date(fs.validTo)
+  }
+  if (fs.hasOwnProperty('validFrom')) {
+    fs.validFrom = new Date(fs.validFrom)
+  }
+  return fs
+})
+/**
+ * @type {Aggregate[]}
+ */
+const data = require('./filter.data')
 
 describe('lib/filter.js', () => {
   before('monkeypatch built-ins to emulate reql object functions', () => {
-    // eslint-disable-next-line no-extend-native
+    /* eslint-disable no-extend-native */
+
     Array.prototype.contains = Array.prototype.some
-    // eslint-disable-next-line no-extend-native
-    String.prototype.eq = function (str) { return this.toString() === str }
-    // eslint-disable-next-line no-extend-native
-    Object.prototype.getField = function getField (field) {
-      if (!this.hasOwnProperty(field)) {
-        throw new Error('No attribute ' + field + ' in object: ' + this)
-      }
-      return this[field]
+
+    String.prototype.eq = function (str) { return this.valueOf() === str }
+
+    // (reQL) match returns null or array, but for ease of we return true or false
+    const match = String.prototype.match
+    String.prototype.match = function (regexp) {
+      return !!match.call(this, regexp)
     }
-    // eslint-disable-next-line no-extend-native
+
+    Object.prototype.getField = function getField (field) {
+      return this[field] || ''
+    }
+
     Number.prototype.gt = function (number) { return this.valueOf() > number }
-    // eslint-disable-next-line no-extend-native
-    Number.prototype.gte = function (number) { return this.valueOf() >= number }
-    // eslint-disable-next-line no-extend-native
+    Number.prototype.ge = function (number) { return this.valueOf() >= number }
     Number.prototype.lt = function (number) { return this.valueOf() < number }
-    // eslint-disable-next-line no-extend-native
-    Number.prototype.lte = function (number) { return this.valueOf() <= number }
-    // eslint-disable-next-line no-extend-native
+    Number.prototype.le = function (number) { return this.valueOf() <= number }
+
     Boolean.prototype.and = function (val) { return this.valueOf() && val }
-    // eslint-disable-next-line no-extend-native
     Boolean.prototype.not = function () { return !this.valueOf() }
   })
 
   describe('spec', () => {
-    it('r.add should return regexp of concatenated strings', () => {
-      const expected = '/ab'.concat('cd/')
-      const actual = reqlMock.add('ab', 'cd').toString()
+    describe('r', () => {
+      it('r.add should return regexp of concatenated strings', () => {
+        const expected = '/ab'.concat('cd/')
+        const actual = reqlMock.add('ab', 'cd').toString()
 
-      assert.equal(expected, actual)
+        assert.equal(expected, actual)
+      })
+
+      it('r.expr is the identity function', () => {
+        assert.equal(reqlMock.expr(true), true)
+        assert.deepEqual(reqlMock.expr({ 1: 2 }), { 1: 2 })
+      })
+
+      it('r.and is the and of two booleans', () => {
+        assert.isTrue(reqlMock.and(true, true))
+        assert.isFalse(reqlMock.and(true, false))
+      })
+
+      it('r.not negates the argument', () => {
+        assert.isTrue(reqlMock.not(false))
+        assert.isFalse(reqlMock.not(true))
+      })
     })
 
-    it('r.expr is the identity function', () => {
-      assert.equal(reqlMock.expr(true), true)
-      assert.deepEqual(reqlMock.expr({ 1: 2 }), { 1: 2 })
+    describe('Array.prototype', () => {
+      it('contains should alias some', () => {
+        assert.isTrue([1, 2, 3].contains(e => e === 2))
+        assert.isFalse(['a', 'b', 'c'].contains(f => f === 'd'))
+      })
     })
 
-    it('r.and is the and of two booleans', () => {
-      assert.isTrue(reqlMock.and(true, true))
-      assert.isFalse(reqlMock.and(true, false))
+    describe('String.prototype', () => {
+      it('match returns false or true', () => {
+        assert.equal('abcd'.match(/abcd/), true)
+        assert.equal('abcd'.match(/abd/), false)
+      })
     })
 
-    it('getField should be an object method returning named property of object', () => {
-      const expected = 2
-      const obj = { expected }
-      const actual = obj.getField('expected')
-      assert.equal(expected, actual)
+    describe('Object.prototype', () => {
+      it('getField should return named property of object', () => {
+        const expected = 2
+        const obj = { expected }
+        const actual = obj.getField('expected')
+        assert.equal(expected, actual)
+      })
     })
 
-    it('Boolean.prototype.and', () => {
-      assert.isFalse(false.and(true))
-      assert.isFalse(true.and(false))
-      assert.isTrue(true.and(true))
+    describe('Number.prototype', () => {
+      it('gt', () => {
+        assert.isTrue(Number(1).gt(0))
+        assert.isFalse(Number(1).gt(1))
+        assert.isFalse(Number(1).gt(2))
+      })
+      it('lt', () => {
+        assert.isTrue(Number(0).lt(1))
+      })
+      it('ge', () => {
+        assert.isTrue(Number(3).ge(2))
+        assert.isTrue(Number(3).ge(3))
+      })
+      it('le', () => {
+        assert.isTrue(Number(1).le(2))
+        assert.isTrue(Number(1).le(1))
+      })
+    })
+
+    describe('Boolean.prototype', () => {
+      it('and', () => {
+        assert.isFalse(false.and(true))
+        assert.isFalse(true.and(false))
+        assert.isTrue(true.and(true))
+      })
+
+      it('not', () => {
+        assert.isTrue(false.not())
+        assert.isFalse(true.not())
+      })
     })
   })
 
@@ -87,15 +153,13 @@ describe('lib/filter.js', () => {
       assert.isFunction(prefixOf('hello'))
     })
 
-    it('returned function should return null when argument of function is not a prefix', () => {
-      assert.isNull(prefixOf('hello')('go'))
+    it('returned function should return falsy when called with an argument which is not a prefix', () => {
+      assert.isFalse(prefixOf('hello')('go'))
     })
 
-    it('returned function should return an array when argument of function is a prefix', () => {
+    it('returned function should return truthy when called with an argument that is a prefix', () => {
       const result = prefixOf('golang')('go')
-
-      assert.isArray(result)
-      assert.equal(result[0], 'go')
+      assert.isTrue(result)
     })
   })
 
@@ -116,7 +180,7 @@ describe('lib/filter.js', () => {
       assert.throws(fn, TypeError)
     })
 
-    it('returned function should work', () => {
+    it('returned function should identify a value present in given array', () => {
       const result = someInArrayEquals(['NNO', 1, 2, 3])('NNO')
       assert.isTrue(result)
     })
@@ -133,12 +197,12 @@ describe('lib/filter.js', () => {
       assert.isBoolean(result)
     })
 
-    it('returned function should throw when argument is undefined', () => {
+    it('returned function should throw when called with an argument of undefined', () => {
       assert.throws(someInArrayIsPrefixOf(['NOB', 'NNO']), TypeError)
     })
 
-    it('returned function should return true when there is some array element who is a prefix of stored string', () => {
-      const result = someInArrayIsPrefixOf(['NNOB', 1, 2, 3])('NNOBELUGA')
+    it('should when called with an array return a function which can identify if any of the values in the array is a prefix of a given string', () => {
+      const result = someInArrayIsPrefixOf(['NNO', 1, 2, 3])('NNOBELUGA')
       assert.isTrue(result)
     })
   })
@@ -166,16 +230,16 @@ describe('lib/filter.js', () => {
       assert.isFunction(result)
     })
 
-    it('returned function should return boolean when argument is a string', () => {
-      const result = matchRegexp(/ab+cd/)('abcd')
-      assert.isBoolean(result)
+    it('returned function should return falsy when no match is found', () => {
+      const result = matchRegexp(/a+cd/)('abcd')
+      assert.isFalse(result)
     })
 
     it('returned function should throw when argument is not a string', () => {
       assert.throws(matchRegexp(/ab+cd/).bind(matchRegexp, true), TypeError)
     })
 
-    it('returned function should return true when a matching regexp is given', () => {
+    it('returned function should return truthy when a matching regexp is given', () => {
       const result = matchRegexp(/abc/)('abcdefgh')
       assert.isTrue(result)
     })
@@ -196,38 +260,60 @@ describe('lib/filter.js', () => {
     })
   })
 
-  describe('makePredicate', () => {
+  describe('filterToPredicate', () => {
     it('should return a function when given arguments', () => {
       const filter = filterSet.filters.find(_ => _.name === 'requestedUri')
-      const fn = makePredicate(filter)
+      const fn = filterToPredicate(filter)
       assert.isFunction(fn)
     })
 
     it('returned function should return boolean when given an array argument', () => {
       const filter = filterSet.filters.find(_ => _.name === 'requestedUri')
-      const predicateFn = makePredicate(filter)
-      const predicate = predicateFn(selection[0])
+      const fn = filterToPredicate(filter)
+      const predicate = fn(data[0])
       assert.isBoolean(predicate)
+    })
+
+    it('predicate function should filter a selection as defined by the filter', () => {
+      const filter = { name: 'language', value: ['NNO'] }
+      const no = { language: 'BOR' }
+      const yes = { language: 'NNO' }
+      const selection = [no, yes]
+      const result = selection.filter(filterToPredicate(filter))
+      assert.deepEqual(result, [yes])
     })
   })
 
-  describe('filterToPredicate', () => {
+  describe('filtersToPredicates', () => {
+    it('should return an array of functions', () => {
+      assert.isArray(filtersToPredicates(filterSet.filters))
+      filtersToPredicates(filterSet.filters).forEach(p => assert.isFunction(p))
+    })
+
+    it('should return an array of predicate functions', () => {
+      filtersToPredicates(filterSet.filters)
+        .map(p => p({ notPresent: false }))
+        .forEach(bool => assert.isBoolean(bool))
+    })
+  })
+
+  describe('filtersToPredicate', () => {
     it('should return a function given an array of filters', () => {
       assert.isArray(filterSet.filters)
-      const result = filterToPredicate(filterSet.filters)
+      const result = filtersToPredicate(filterSet.filters)
       assert.isFunction(result)
     })
 
     it('should filter a selection of according to the rules (of language)', () => {
+      const filter = { name: 'language', value: ['NNO'] }
       const no = { language: 'BOR' }
       const yes = { language: 'NNO' }
       const selection = [no, yes]
-
-      const result = selection.filter(filterToPredicate([{ name: 'language', value: ['NNO'] }]))
+      const result = selection.filter(filtersToPredicate([filter]))
       assert.deepEqual(result, [yes])
     })
 
-    it('should filter a selection of according to the rules (of requestedUri)', () => {
+    it('should filter a selection according to the rules (of requestedUri)', () => {
       const no = { language: 'BOR', requestedUri: 'https://www.nb.no' }
       const yes = { language: 'NNO', requestedUri: 'https://nettarkivet.nb.no' }
       const selection = [no, yes]
@@ -236,21 +322,23 @@ describe('lib/filter.js', () => {
         { name: 'language', value: ['NNO'] }
       ]
 
-      const result = selection.filter(filterToPredicate(filters))
+      const result = selection.filter(filtersToPredicate(filters))
       assert.deepEqual(result, [yes])
     })
 
     it('should support exlusive filters', () => {
-      const predicates = filterToPredicate(filterSet.filters)
-      const result = selection.filter(predicates)
-      assert.isTrue(result.length === 7)
-      const exlusiveFilter = filterSet.filters.find(_ => _.exlusive === true)
-      assert.isTrue(result.find(_ => _.requestedUri.match(exlusiveFilter.value)) === undefined)
+      const predicates = filtersToPredicate(filterSet.filters)
+      const results = data.filter(predicates)
+
+      const exclusiveFilters = filterSet.filters.filter(f => f.exclusive === true)
+      exclusiveFilters.forEach(filter => {
+        assert.isFalse(results.some(result => result[filter.field || filter.name].match(filter.value)))
+      })
     })
   })
 
   describe('intervalize', () => {
-    it('places filterSets into intervals', () => {
+    it('places the ids of filterSets into time intervals', () => {
       const [a, b, c, d, e, f, g, h, i] = intervalize(intervals)
 
       const expected = {
