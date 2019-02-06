@@ -26,7 +26,7 @@ const {
  * @type {FilterSet}}
  */
 const filterSet = require('./filter').filterSets[0]
-const intervals = require('./filter').filterSets.map(fs => {
+const filterSets = require('./filter').filterSets.map(fs => {
   if (fs.hasOwnProperty('validTo')) {
     fs.validTo = new Date(fs.validTo)
   }
@@ -339,7 +339,7 @@ describe('lib/filter.js', () => {
 
   describe('intervalize', () => {
     it('places the ids of filterSets into time intervals', () => {
-      const [a, b, c, d, e, f, g, h, i] = intervalize(intervals)
+      const [a, b, c, d, e, f, g, h, i] = intervalize(filterSets)
 
       const expected = {
         a: [a, b, c, d, e, f, g, h],
@@ -352,6 +352,14 @@ describe('lib/filter.js', () => {
       Object.entries(expected).forEach(([id, haystack]) =>
         assert.isTrue(haystack.every(needle => needle.ids.includes(id)))
       )
+    })
+
+    it('handles single interval without bounds', () => {
+      const sets = filterSets.slice(0, 1)
+      const intervals = intervalize(sets)
+      assert.equal(1, intervals.length)
+      assert.equal(1, intervals[0].ids.length)
+      assert.equal(sets[0].id, intervals[0].ids[0])
     })
   })
 })
