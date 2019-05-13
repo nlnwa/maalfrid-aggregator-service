@@ -226,21 +226,21 @@ describe('lib/filter.js', () => {
 
   describe('matchRegexp', () => {
     it('should return a function when given an argument', () => {
-      const result = matchRegexp(/ab+cd/)
+      const result = matchRegexp('ab+cd')
       assert.isFunction(result)
     })
 
     it('returned function should return falsy when no match is found', () => {
-      const result = matchRegexp(/a+cd/)('abcd')
+      const result = matchRegexp('a+cd')('abcd')
       assert.isFalse(result)
     })
 
     it('returned function should throw when argument is not a string', () => {
-      assert.throws(matchRegexp(/ab+cd/).bind(matchRegexp, true), TypeError)
+      assert.throws(matchRegexp('ab+cd').bind(matchRegexp, true), TypeError)
     })
 
     it('returned function should return truthy when a matching regexp is given', () => {
-      const result = matchRegexp(/abc/)('abcdefgh')
+      const result = matchRegexp('abc')('abcdefgh')
       assert.isTrue(result)
     })
   })
