@@ -28,3 +28,4 @@ EXPOSE 3011
 USER node
 
 ENTRYPOINT ["/usr/local/bin/node", "index.js"]
+CMD ["serve"]
