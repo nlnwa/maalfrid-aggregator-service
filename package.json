@@ -2,7 +2,7 @@
   "name": "maalfrid-aggregator-service",
   "version": "0.1.0-beta.3",
   "license": "Apache-2.0",
-  "description": "Maalfrid aggregator service API",
+  "description": "Maalfrid aggregator service",
   "main": "index.js",
   "repository": "https://github.com/nlnwa/maalfrid-aggregator-service",
   "private": true,
@@ -14,10 +14,11 @@
   },
   "dependencies": {
     "@grpc/proto-loader": "^0.5.0",
+    "commander": "^2.20.0",
     "date-fns": "^1.30.1",
-    "grpc": "^1.20.2",
+    "grpc": "^1.20.3",
     "maalfrid-api": "nlnwa/maalfrid-api#master",
-    "rethinkdb-js": "rethinkdb/rethinkdb-js#master"
+    "rethinkdb-ts": "^2.4.0-rc.13"
   },
   "devDependencies": {
     "chai": "^4.2.0",
