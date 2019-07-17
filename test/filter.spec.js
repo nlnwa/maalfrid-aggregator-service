@@ -27,10 +27,10 @@ const {
  */
 const filterSet = require('./filter').filterSets[0]
 const filterSets = require('./filter').filterSets.map(fs => {
-  if (fs.hasOwnProperty('validTo')) {
+  if (Object.prototype.hasOwnProperty.call(fs, 'validTo')) {
     fs.validTo = new Date(fs.validTo)
   }
-  if (fs.hasOwnProperty('validFrom')) {
+  if (Object.prototype.hasOwnProperty.call(fs, 'validFrom')) {
     fs.validFrom = new Date(fs.validFrom)
   }
   return fs
